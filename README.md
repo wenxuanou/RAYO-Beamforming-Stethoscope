@@ -2,3 +2,8 @@
 ECE188 Capstone Project 
 
 gui.py requires lpf.mat to run
+
+Python library required:
+- matplotlib
+- pyaudio
+- scipy
