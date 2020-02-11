@@ -3,29 +3,50 @@
 //Conections:
 //Mega 2560 - 50 (MISO), 51 (MOSI), 52 (SCK), 53 (SS).
 
-int pinDRDY_not = 2; //GPIO 2 detect DRDY_not from ADC, interrupt 
+const int pinDRDY_not = 2; //GPIO 2 detect DRDY_not from ADC, interrupt 
 
-int8_t buffer;  //32 bits of data
-uint8 size = 3;   //number of bytes
+int channelCount = 0;
+const int channelNum = 6;   //number of bytes,
+int8_t dataBuffer[6];  //32 bit container of 8 bit data, 6 channels
 
 
-SPI.transfer(&buffer, size);
 void setup() {
   // put your setup code here, to run once:
 
   int spiFreq = 27000000; //Frequency be 27MHz
-  SPISettings mySettting(spiFreq, MSBFIRST, SPI_MODE0);
-  SPI.beginTransaction(mySettings); 
+  SPI.beginTransaction(SPISettings(spiFreq, MSBFIRST, SPI_MODE0)); 
 
-  pinMode(pinDRDY_not,INPUT);
-  attachInterrupt(digitalPinToInterrupt(pinDRDY_not), readBit(), FALLING);
+  pinMode(pinDRDY_not,INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(pinDRDY_not), readBit, FALLING);
+
+  for(int count = 0; count < channelNum; count++){
+      dataBuffer[count] = 0x00; 
+    }
+
+  Serial.begin(9600); // open the serial port at 9600 bps
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  for(int count = 0; count < channelNum; count++){
+    Serial.print((int) dataBuffer[count]);
+    Serial.print("\t");
+    }
+    
+  Serial.println();
+  delay(200);            // delay 200 milliseconds
 }
 
 void readBit(){
-  
+  for(int count = 2; count >= 0; count--){
+      uint8_t data = SPI.transfer(0x00); //Transfer 8 bit data
+      dataBuffer[channelCount] |= data << (count * 8);  //Concatenate to 24 bit  
+    }
+
+  if(channelCount < channelNum){
+    channelCount++; //Move to next channel
+  }else{
+    channelCount = 0;
+    }
 }
