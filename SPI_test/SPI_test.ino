@@ -7,7 +7,7 @@ const int pinDRDY_not = 2; //GPIO 2 detect DRDY_not from ADC, interrupt
 
 int channelCount = 0;
 const int channelNum = 6;   //number of bytes,
-int8_t dataBuffer[6];  //32 bit container of 8 bit data, 6 channels
+uint8_t dataBuffer[6];  //32 bit container of 8 bit data, 6 channels
 
 
 void setup() {
@@ -30,7 +30,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   for(int count = 0; count < channelNum; count++){
-    Serial.print((int) dataBuffer[count]);
+    Serial.print(binary2decimal(dataBuffer[count]));
     Serial.print("\t");
     }
     
@@ -50,3 +50,15 @@ void readBit(){
     channelCount = 0;
     }
 }
+
+int binary2decimal(uint8_t input){
+    int output;
+    uint8_t temp;
+
+    temp = ~input;
+    temp += 0x01;
+
+    for(int count = 0; count < 24; count++){
+      output += (input & (0x01 << count)) * pow(2,count);
+      }
+  }
