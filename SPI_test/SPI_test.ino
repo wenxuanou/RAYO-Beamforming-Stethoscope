@@ -13,7 +13,8 @@ uint8_t dataBuffer[6];  //32 bit container of 8 bit data, 6 channels
 void setup() {
   // put your setup code here, to run once:
 
-  int spiFreq = 27000000; //Frequency be 27MHz
+  //int spiFreq = 27000000; //Frequency be 27MHz
+  int spiFreq = 8000000; // reduce to 8MHz
   SPI.beginTransaction(SPISettings(spiFreq, MSBFIRST, SPI_MODE0)); 
 
   pinMode(pinDRDY_not,INPUT_PULLUP);
