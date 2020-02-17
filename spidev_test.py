@@ -17,7 +17,7 @@ GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 spi = spidev.SpiDev()
 spi.open(0, 0) # bus number, device number
 spi.max_speed_hz = 7800000 # up to 125000000Hz = 125.0 MHz
-spi.mode = 0b11 # clock polarity and phase (0b00 - 0b11)
+spi.mode = 0b10 # clock polarity and phase (0b00 - 0b11)
 spi.no_cs = True 
 
 
@@ -25,7 +25,7 @@ spi.no_cs = True
 def inv_twos_comp(val, bits):
     if (val & (1 << (bits - 1))) != 0: # if sign bit is set e.g., 8bit: 128-255
         val = (~val & 0xFFF)  + 1
-        #val = val - (1 << bits)        # compute negative value
+        # compute negative value
     return val
 
 def readADC(self):
@@ -33,8 +33,8 @@ def readADC(self):
     results = spi.readbytes(3)
     value = (results[0] << 16) + (results[1] << 8) + (results[2])
     hex_vals = (value & 0xFFFFFF)
-    #print((inv_twos_comp(value,24)))
-    print(hex(hex_vals))
+    print((inv_twos_comp(value,24)))
+    #print(hex(hex_vals))
     
     ##if value > 2**23:
        #value = 2**23 - value
@@ -53,6 +53,7 @@ def readADC(self):
     #print(resp[2])
 
    
+#if __name__ == "__main__":
 
 GPIO.add_event_detect(17, GPIO.FALLING, callback = readADC, bouncetime = 300)
 

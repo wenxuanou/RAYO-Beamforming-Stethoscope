@@ -14,11 +14,11 @@ void setup() {
   // put your setup code here, to run once:
 
   //int spiFreq = 27000000; //Frequency be 27MHz
-  int spiFreq = 8000000; // reduce to 8MHz
+  int spiFreq = 8000; // reduce to 8kHz
   SPI.beginTransaction(SPISettings(spiFreq, MSBFIRST, SPI_MODE0)); 
 
   pinMode(pinDRDY_not,INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(pinDRDY_not), readBit, FALLING);
+  //attachInterrupt(digitalPinToInterrupt(pinDRDY_not), readBit, FALLING);
 
   for(int count = 0; count < channelNum; count++){
       dataBuffer[count] = 0x00; 
@@ -30,16 +30,25 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  for(int count = 2; count >= 0; count--){
+      uint8_t data = SPI.transfer(0x00); //Transfer 8 bit data
+      dataBuffer[channelCount] |= data << (count * 8);  //Concatenate to 24 bit  
+    }
+  
+  /*
   for(int count = 0; count < channelNum; count++){
     Serial.print(binary2decimal(dataBuffer[count]));
     Serial.print("\t");
     }
     
   Serial.println();
-  delay(200);            // delay 200 milliseconds
+*/
+  
+  //delay(200);            // delay 200 milliseconds
 }
 
-void readBit(){
+/*
+void readBit(){  
   for(int count = 2; count >= 0; count--){
       uint8_t data = SPI.transfer(0x00); //Transfer 8 bit data
       dataBuffer[channelCount] |= data << (count * 8);  //Concatenate to 24 bit  
@@ -51,6 +60,7 @@ void readBit(){
     channelCount = 0;
     }
 }
+*/
 
 int binary2decimal(uint8_t input){
     int output;
