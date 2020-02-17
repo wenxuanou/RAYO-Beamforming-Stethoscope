@@ -32,18 +32,18 @@ def readADC(self):
     #resp = spi.xfer2([0,0,0])
     results = spi.readbytes(3)
     value = (results[0] << 16) + (results[1] << 8) + (results[2])
-    hex_vals = (value & 0xFFFFFF)
-    print((inv_twos_comp(value,24)))
+    #hex_vals = (value & 0xFFFFFF)
+    #print((inv_twos_comp(value,24)))
     #print(hex(hex_vals))
     
-    ##if value > 2**23:
-       #value = 2**23 - value
+    if value > 2**23:
+       value = 2**23 - value
         
 
-    ##Vref = 2.5
-    #volts = Vref*value/2**23
+    Vref = 2.5
+    volts = Vref*value/2**22
     
-    ##print(volts)
+    print(volts)
     
     #print(bin(results[0] << 16))
     #print(results[1])
@@ -53,7 +53,9 @@ def readADC(self):
     #print(resp[2])
 
    
-#if __name__ == "__main__":
+if __name__ == "__main__":
+    print("run")
+
 
 GPIO.add_event_detect(17, GPIO.FALLING, callback = readADC, bouncetime = 300)
 
