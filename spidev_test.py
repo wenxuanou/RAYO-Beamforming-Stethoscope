@@ -36,12 +36,10 @@ def readADC(self):
     #print((inv_twos_comp(value,24)))
     #print(hex(hex_vals))
     
-    if value > 2**23:
-       value = 2**23 - value
-        
+    
 
     Vref = 2.5
-    volts = Vref*value/2**22
+    volts = (value/(2**23-1))*5
     
     print(volts)
     
