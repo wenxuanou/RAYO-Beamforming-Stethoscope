@@ -20,7 +20,9 @@ spi.max_speed_hz = 7800000 # up to 125000000Hz = 125.0 MHz
 spi.mode = 0b10 # clock polarity and phase (0b00 - 0b11)
 spi.no_cs = True 
 
-
+Vref = 2.5
+chanNum = 1
+volts = []
 
 def inv_twos_comp(val, bits):
     if (val & (1 << (bits - 1))) != 0: # if sign bit is set e.g., 8bit: 128-255
@@ -29,19 +31,16 @@ def inv_twos_comp(val, bits):
     return val
 
 def readADC(self):
-    #resp = spi.xfer2([0,0,0])
-    results = spi.readbytes(3)
-    value = (results[0] << 16) + (results[1] << 8) + (results[2])
+    #results = spi.readbytes(3)
+    #value = (results[0] << 16) + (results[1] << 8) + (results[2])
     #hex_vals = (value & 0xFFFFFF)
     #print((inv_twos_comp(value,24)))
     #print(hex(hex_vals))
-    
-    
 
-    Vref = 2.5
-    volts = (value/(2**23-1))*5
+    #Vref = 2.5
+    #volts = (value/(2**23-1))*(2 * Vref)
     
-    print(volts)
+    #print(volts)
     
     #print(bin(results[0] << 16))
     #print(results[1])
@@ -49,13 +48,29 @@ def readADC(self):
     #print(resp[0])
     #print(resp[1])
     #print(resp[2])
-
-   
-if __name__ == "__main__":
-    print("run")
+    
+    ########################################
+    #For 2 channel sampling, chanNum = 2
+    for count in range(chanNum):
+        results = spi.readbytes(3)
+        value = (results[0] << 16) + (results[1] << 8) + (results[2])
+        value = inv_twos_comp(value, 24)
+        volts[count] = (value/(2**23-1))*(2 * Vref)
+        
+    
+    for count in range(chanNum):
+        print(volts[count])
 
 
 GPIO.add_event_detect(17, GPIO.FALLING, callback = readADC, bouncetime = 300)
+
+if __name__ == "__main__":
+    print("run")
+    
+    for count in range(chanNum):
+        volts.append(0)
+
+
 
 
 
