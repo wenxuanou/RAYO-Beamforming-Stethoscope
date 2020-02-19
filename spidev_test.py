@@ -20,8 +20,10 @@ spi.max_speed_hz = 7800000 # up to 125000000Hz = 125.0 MHz
 spi.mode = 0b10 # clock polarity and phase (0b00 - 0b11)
 spi.no_cs = True 
 
+# Sampling in 2 channels, need to power up corresponding channel on ADC
+# Using dynamic sampling mode, erased empty channel
 Vref = 2.5
-chanNum = 1
+chanNum = 2 
 volts = []
 
 def inv_twos_comp(val, bits):
@@ -42,26 +44,18 @@ def readADC(self):
     
     #print(volts)
     
-    #print(bin(results[0] << 16))
-    #print(results[1])
-    #print(results[2])
-    #print(resp[0])
-    #print(resp[1])
-    #print(resp[2])
-    
     ########################################
     #For 2 channel sampling, chanNum = 2
     for count in range(chanNum):
         results = spi.readbytes(3)
         value = (results[0] << 16) + (results[1] << 8) + (results[2])
-        value = inv_twos_comp(value, 24)
+        value = inv_twos_comp(value, 24) 
         volts[count] = (value/(2**23-1))*(2 * Vref)
         
-    
-    for count in range(chanNum):
-        print(volts[count])
+    tstamp = (time.strftime("%Y %d %b %H.%M.%S"))# Create time stamp
+    print(tstamp, "Channel A: ", volts[0], "Channel B: ", volts[1]);
 
-
+# Setup interrupt listening data r
 GPIO.add_event_detect(17, GPIO.FALLING, callback = readADC, bouncetime = 300)
 
 if __name__ == "__main__":
