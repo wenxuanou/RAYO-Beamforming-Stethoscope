@@ -23,11 +23,11 @@ spi.no_cs = True
 # Sampling in 2 channels, need to power up corresponding channel on ADC
 # Using dynamic sampling mode, erased empty channel
 Vref = 2.5
-chanNum = 2 
+chanNum = 1 
 volts = []  # Data read in buffer
 
 data = []   # Data to stored in matlab
-dataNum = 2048  # Number of Data to read in
+dataNum = 1024  # Number of Data to read in
 dataCount = 0   # Number of Data saved
 
 # Timing
@@ -71,14 +71,16 @@ def readADC(self):
 
         # Save data
         data.insert(dataCount, volts)
-
+        #print("Get")
         dataCount += 1
     else:
         elapsed = time.time() - t
-        sio.savemat("data.mat", {"data": data, "elapsed time": elapsed})
+        sio.savemat("./data.mat", {"data": data, "elapsed time": elapsed})
+        print("Finished")
+        exit()
 
 # Setup interrupt listening data r
-GPIO.add_event_detect(17, GPIO.FALLING, callback = readADC, bouncetime = 300)
+GPIO.add_event_detect(17, GPIO.FALLING, callback = readADC) # Bounce time was 300ms
 
 
 
