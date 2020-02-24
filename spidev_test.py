@@ -27,7 +27,7 @@ chanNum = 1
 volts = []  # Data read in buffer
 
 data = []   # Data to stored in matlab
-dataNum = 1024  # Number of Data to read in
+dataNum = 10240  # Number of Data to read in
 dataCount = 0   # Number of Data saved
 
 # Timing
@@ -41,6 +41,7 @@ def inv_twos_comp(val, bits):
 
 def readADC(self):
     global dataCount, t
+    #print("dataCount: ", dataCount)
 
     if dataCount < dataNum:
         if dataCount == 0:
@@ -68,19 +69,21 @@ def readADC(self):
         ## Display data
         #tstamp = (time.strftime("%Y %d %b %H.%M.%S"))# Create time stamp
         #print(tstamp, "Channel A: ", volts[0], "Channel B: ", volts[1])
+        #print(tstamp, "Channel A: ", volts[0])
 
         # Save data
-        data.insert(dataCount, volts)
+        data.append(volts)
         #print("Get")
         dataCount += 1
     else:
         elapsed = time.time() - t
         sio.savemat("./data.mat", {"data": data, "elapsed time": elapsed})
         print("Finished")
-        exit()
+        GPIO.cleanup()
+        
 
 # Setup interrupt listening data r
-GPIO.add_event_detect(17, GPIO.FALLING, callback = readADC) # Bounce time was 300ms
+GPIO.add_event_detect(17, GPIO.FALLING, callback = readADC, bouncetime = 1) # Bounce time was 300ms
 
 
 
@@ -89,6 +92,3 @@ if __name__ == "__main__":
 
     for count in range(chanNum):
         volts.append(0)
-
-
-
