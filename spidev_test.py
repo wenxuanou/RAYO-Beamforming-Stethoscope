@@ -24,14 +24,14 @@ spi.no_cs = True
 # Using dynamic sampling mode, erased empty channel
 Vref = 2.5
 chanNum = 1 
-volts = []  # Data read in buffer
 
-data = []   # Data to stored in matlab
-dataNum = 10240  # Number of Data to read in
+dataNum = 1024  # Number of Data to read in
 dataCount = 0   # Number of Data saved
+data = []   # Data to stored in matlab, dataNum by chanNum
 
 # Timing
 t = 0
+
 
 def inv_twos_comp(val, bits):
     if (val & (1 << (bits - 1))) != 0: # if sign bit is set e.g., 8bit: 128-255
@@ -40,8 +40,10 @@ def inv_twos_comp(val, bits):
     return val
 
 def readADC(self):
-    global dataCount, t
+    global dataCount, t, data
     #print("dataCount: ", dataCount)
+    volts = [0 for i in range(chanNum)]  # Data read in buffer, chanNum by 1
+
 
     if dataCount < dataNum:
         if dataCount == 0:
@@ -69,11 +71,11 @@ def readADC(self):
         ## Display data
         #tstamp = (time.strftime("%Y %d %b %H.%M.%S"))# Create time stamp
         #print(tstamp, "Channel A: ", volts[0], "Channel B: ", volts[1])
-        #print(tstamp, "Channel A: ", volts[0])
+        #print("dataCount: ", dataCount, "Channel A: ", volts[0])
 
         # Save data
-        data.append(volts)
-        #print("Get")
+        data.insert(dataCount,volts)
+        #print("data 1: ", data[dataCount])
         dataCount += 1
     else:
         elapsed = time.time() - t
@@ -86,9 +88,6 @@ def readADC(self):
 GPIO.add_event_detect(17, GPIO.FALLING, callback = readADC, bouncetime = 1) # Bounce time was 300ms
 
 
-
 if __name__ == "__main__":
     print("run")
 
-    for count in range(chanNum):
-        volts.append(0)
