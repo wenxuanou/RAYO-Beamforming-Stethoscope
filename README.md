@@ -12,5 +12,6 @@ Python library required:
 
 Capstone Page Link:
 https://capstone.engineering.ucsb.edu/projects/rayo
+
 Expo Video Link:
 https://www.youtube.com/watch?v=yL1HTVcWR3E	
