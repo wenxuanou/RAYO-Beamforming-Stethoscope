@@ -9,3 +9,6 @@ Python library required:
 - matplotlib
 - pyaudio
 - scipy
+
+Capstone Page Link:
+https://capstone.engineering.ucsb.edu/projects/rayo
